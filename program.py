@@ -26,12 +26,11 @@ class App:
 			self._window.blit(pygame.transform.scale(self._window_resize,event.dict['size']), (0,0))
 			pygame.display.flip()
 
-	def on_loop(self):
-		pass
 
-	def on_render(self): #The render of the game each frame
-		self.wall = pygame.image.load("Assets/wall.png").convert_alpha()
-		
+	def on_loop(self):
+		playerp = self._window_resize.blit(self.player, self.player_pos)
+
+	def on_render(self): #The render of the game each frames
 		pygame.display.flip()
 
 	def on_cleanup(self): #Quit app
@@ -45,6 +44,10 @@ class App:
 		#Load textures before runtime of App
 		self.wall = pygame.image.load("Assets/wall.png").convert_alpha()
 		self.path = pygame.image.load("Assets/path.png").convert_alpha()
+		self.player = pygame.image.load("Assets/macgyver.png").convert_alpha()
+
+		self.player_pos = (0,0)
+
 		self.open_lab("LabyrinthFiles/test.labyrinth")
 		print(self.COLLISION.get(0,0))
 
@@ -72,6 +75,7 @@ class App:
 					x += 1
 					if(casetype == 0): #type 0 is wall
 						wall = self._window_resize.blit(self.wall, (x*30,y*30))
+						wall.change_layer()
 						self.COLLISION.update({(wall.x,wall.y) : 0})
 					elif(casetype == 1): #type 1 is path
 						path = self._window_resize.blit(self.path, (x*30,y*30))
