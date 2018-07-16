@@ -264,8 +264,6 @@ class Wall(pygame.sprite.Sprite):
         self.rect.center = (x + 16, y + 16)
 
 # Path Sprite Class
-
-
 class Path(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
@@ -277,8 +275,6 @@ class Path(pygame.sprite.Sprite):
         self.rect.center = (x + 16, y + 16)
 
 # Loot Sprite Class
-
-
 class Loot(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
