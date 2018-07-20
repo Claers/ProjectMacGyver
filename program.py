@@ -14,7 +14,7 @@ def TestObjectCollision(player, objectlist):
 
 
 class App:
-    COLLISION = {}  # Dictionnary that stock position of walls/path
+      
 
     def __init__(self, w_height, w_lenght):  # Init App Class
         self._running = True
@@ -44,16 +44,16 @@ class App:
         if self.playerobj.alive:
             if event.type == pygame.KEYDOWN:  # Get Key Events
                 if event.key == pygame.K_RIGHT:
-                    if self.COLLISION.get((self.playerobj.posx + 30, self.playerobj.posy)) == 1:
+                    if self.collision.get((self.playerobj.posx + 30, self.playerobj.posy)) == 1:
                         self.playerobj.move_right(30)
                 if event.key == pygame.K_LEFT:
-                    if self.COLLISION.get((self.playerobj.posx - 30, self.playerobj.posy)) == 1:
+                    if self.collision.get((self.playerobj.posx - 30, self.playerobj.posy)) == 1:
                         self.playerobj.move_left(30)
                 if event.key == pygame.K_UP:
-                    if self.COLLISION.get((self.playerobj.posx, self.playerobj.posy - 30)) == 1:
+                    if self.collision.get((self.playerobj.posx, self.playerobj.posy - 30)) == 1:
                         self.playerobj.move_up(30)
                 if event.key == pygame.K_DOWN:
-                    if self.COLLISION.get((self.playerobj.posx, self.playerobj.posy + 30)) == 1:
+                    if self.collision.get((self.playerobj.posx, self.playerobj.posy + 30)) == 1:
                         self.playerobj.move_down(30)
                 self.update = True
 
@@ -131,6 +131,8 @@ class App:
         self.oldposx = 0
         self.oldposy = 30
 
+        self.collision = {}  # Dictionnary that stock position of walls/path
+        
         # Used for Optimisation
         self.update = True
 
@@ -156,7 +158,7 @@ class App:
         file = open(filename, "r")
         y = -1
         x = -1
-        self.objnumber = random.randint(1, 8)
+        self.objnumber = 3
         if file.mode == 'r':
             content = json.load(file)  # Load labyrinth is json
             for lenght in content:
@@ -167,34 +169,42 @@ class App:
                         wall = Wall(x * 30, y * 30)
                         # add wall to background sprite group
                         self.font_group.add(wall)
-                        self.COLLISION.update({(wall.posx, wall.posy): 0})
+                        self.collision.update({(wall.posx, wall.posy): 0})
                     elif(casetype == 1):  # type 1 is path
                         path = Path(x * 30, y * 30)
                         # add path to background sprite group
                         self.font_group.add(path)
-                        self.COLLISION.update({(path.posx, path.posy): 1})
+                        self.collision.update({(path.posx, path.posy): 1})
                     elif(casetype == 2):  # type 2 is player
                         self.playerobj = Player(x * 30, y * 30)
                         self.obj_group.add(self.playerobj)
                         path = Path(x * 30, y * 30)
                         self.font_group.add(path)
-                        self.COLLISION.update({(path.posx, path.posy): 1})
+                        self.collision.update({(path.posx, path.posy): 1})
                     elif(casetype == 3):  # type 3 is guard
                         self.guard = Guard(x * 30, y * 30)
                         self.obj_group.add(self.guard)
                         path = Path(x * 30, y * 30)
                         self.font_group.add(path)
-                        self.COLLISION.update({(path.posx, path.posy): 1})
+                        self.collision.update({(path.posx, path.posy): 1})
                 x = -1
 
             i = 0
+            
+            self.objtype = ["aiguille","ether","tube"]
+            objalreadyspawn = []
+
             while i < self.objnumber:  # Spawn objects randomly
-                position = random.choice(list(self.COLLISION.items()))
+                position = random.choice(list(self.collision.items()))
                 if (position[1] == 1):
                     if(position[0][0] != self.playerobj.posx and position[0][1] != self.playerobj.posy):
                         if(position[0][0] != self.guard.posx and position[0][1] != self.guard.posy):
                             i += 1
-                            loot = Loot(position[0][0], position[0][1])
+                            if(len(self.objtype) != 0):
+                                item = random.choice(self.objtype)
+                                self.objtype.remove(item)
+                                print(item)
+                            loot = Loot(position[0][0], position[0][1], item)
                             self.obj_group.add(loot)
                             self.loots.append(loot)
 
@@ -277,11 +287,17 @@ class Path(pygame.sprite.Sprite):
 # Loot Sprite Class
 class Loot(pygame.sprite.Sprite):
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, type):
         self.posx = x
         self.posy = y
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("Assets/lootmodif.png").convert_alpha()
+        self.image = ""
+        if(type == "aiguille"):
+            self.image = pygame.image.load("Assets/aiguille.jpg").convert_alpha()
+        if(type == "tube"):
+            self.image = pygame.image.load("Assets/tube.jpg").convert_alpha()
+        if(type == "ether"):
+            self.image = pygame.image.load("Assets/ether.jpg").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.center = (x + 16, y + 16)
 
