@@ -68,11 +68,9 @@ class App:
 
     def on_loop(self):
         if(len(self.loots) != 0):  # Check if loot is all collected or not
-            # Making a simple check with oldppos vars to avoid collision check
-            # every frame
-            if(self.oldposx != self.playerobj.posx or self.oldposy != self.playerobj.posy):
                 # Use The Function to test collision between player and objects
                 ObjCollision = TestObjectCollision(self.playerobj, self.loots)
+                print("test")
                 if(ObjCollision != None):  # If there's a collision
                     if (ObjCollision[0] == "True"):
                         self.playerobj.lootcollected += 1
@@ -80,8 +78,6 @@ class App:
                         self.loots.remove(ObjCollision[1])
                         # Remove the loot from the render
                         self.obj_group.remove(ObjCollision[1])
-                self.oldposx = self.playerobj.posx  # Update position when it have changed
-                self.oldposy = self.playerobj.posy
 
         # If player is front of the guard / HARDCODED : The test check only
         # left of the guard
@@ -126,10 +122,6 @@ class App:
 
         self.font_group = pygame.sprite.Group()
         self.obj_group = pygame.sprite.Group()
-
-        # Used for collision check in loop section
-        self.oldposx = 0
-        self.oldposy = 30
 
         self.collision = {}  # Dictionnary that stock position of walls/path
         
